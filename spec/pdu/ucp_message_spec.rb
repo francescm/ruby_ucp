@@ -7,9 +7,6 @@ require_relative '../../lib/ucp/pdu/ucpmessage'
 module Ucp::Pdu
 
  describe UCPMessage do
-    before(:all) do
-      @delimiter = UCPMessage.class_eval("DELIMITER")
-    end
    
     it "initializes with no args" do
       u = UCPMessage.new
