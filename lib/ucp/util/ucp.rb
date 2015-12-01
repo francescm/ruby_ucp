@@ -17,12 +17,6 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 =end
 
-
-require "iconv"
-
-$KCODE = 'UTF8'
-require 'jcode'
-
 include Ucp::Pdu
 
 class Ucp::Util::UCP
@@ -33,14 +27,12 @@ class Ucp::Util::UCP
   @extensiontable_rev={}
 
   # add a character mapping to the 7bit GSM default alphabet
-  :private
   def self.add_char(value,char)
     @gsmtable[char]=value
     @asciitable[value]=char
   end
 
   # add an extesion character to the 7bit GSM default alphabet
-  :private
   def self.add_extchar(value,char)
     @extensiontable[char]=value
     @extensiontable_rev[value]=char
@@ -50,12 +42,12 @@ class Ucp::Util::UCP
   def self.initialize_ascii2ira
     
     ('A'..'Z').each { |c|
-      add_char(c[0],c)
+      add_char(c.chr,c)
     }
     ('a'..'z').each { |c|
       #@gsmtable[c]=c[0]
       #@asciitable[c[0]]=c
-      add_char(c[0],c)
+      add_char(c.chr,c)
     }
     ('0'..'9').each { |c|
       add_char(c[0],c)
