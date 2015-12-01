@@ -108,7 +108,6 @@ class UCPMessage
       end
     }
 
-
     pdu=@trn+DELIMITER
     pdu+=length(s)+DELIMITER
     pdu+=@operation_type+DELIMITER
