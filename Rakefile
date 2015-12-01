@@ -21,11 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 require 'rubygems'
 require 'rake'
 require 'rake/clean'
-require 'rake/gempackagetask'
-require 'rake/rdoctask'
+require 'rubygems/package_task'
+require 'rdoc/task'
 
-require 'rake/testtask'
-require 'rcov/rcovtask'
+#require 'rake/testtask'
+require 'rspec/core/rake_task'
+require 'simplecov'
 
 
 begin
@@ -80,7 +81,7 @@ spec = Gem::Specification.new do |s|
   s.bindir = "bin"
 end
 
-Rake::GemPackageTask.new(spec) do |p|
+Gem::PackageTask.new(spec) do |p|
   p.gem_spec = spec
   p.need_tar = true
   p.need_zip = true
@@ -98,20 +99,7 @@ Rake::RDocTask.new do |rdoc|
 end
 
 
-Rake::TestTask.new do |t|
-  t.libs << 'lib'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = false
-end
-
-
-
-
-Rcov::RcovTask.new do |t|
-  t.libs << "test"
-  t.test_files = FileList['test/**/*_test.rb']
-  t.verbose = true
-end
+RSpec::Core::RakeTask.new(:spec)
 
 
 task :default => :build
