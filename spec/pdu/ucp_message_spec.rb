@@ -29,7 +29,7 @@ module Ucp::Pdu
       u.instance_variable_set(:@operation_type, 'O')
       u.instance_variable_set(:@fields, [:oadc,:oton,:onpi,:styp,:pwd,:npwd,:vers,:ladc,:lton,:lnpi,:opid,:res1])
       # "\x0200/00028/O/60/////////////FF\x03"
-      expect(u.to_s).to match /60/
+      expect(u.to_s).to match(/60/)
     end
   end
 
