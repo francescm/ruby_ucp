@@ -22,6 +22,20 @@ module Ucp::Util
      expect(table['2']).to be_eql '2'
      expect(ext_table['€']).to be_eql 0x65
    end
+   
+   it "translets a ASCII string to GSM alphabet" do
+     msg = "Hallo sms"
+     #verify value got from ruby_ucp with ruby-1.8.7
+     verify_value = "C8309BFD06CDDB73"     
+     expect(UCP.pack7bits(msg)).to be_eql verify_value
+   end
+   
+   it "translets a extended string to GSM alphabet" do
+     msg = "Win 1000€"
+     #verify value got from ruby_ucp with ruby-1.8.7
+     verify_value = "D7B41B1483C1609B32"     
+     expect(UCP.pack7bits(msg)).to be_eql verify_value
+   end
  end
  
 end

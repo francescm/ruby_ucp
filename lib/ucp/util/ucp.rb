@@ -50,7 +50,7 @@ class Ucp::Util::UCP
       add_char(c.chr,c)
     }
     ('0'..'9').each { |c|
-      add_char(c[0],c)
+      add_char(c.chr,c)
     }
 
 
@@ -143,43 +143,23 @@ class Ucp::Util::UCP
           gsmchar=@gsmtable[" "]
         end
       end
-
-      #gsmchar=c[0]
-      #puts "#{c} : #{gsmchar} xxx"
-      #gsmchar=@gsmtable[" "] if gsmchar.nil?
-      
-      tmp= gsmchar.to_s(2)
-
-      remainder=tmp.length%7
-      if remainder!=0
-        nfillbits=7-remainder
-        tmp="0"*nfillbits+tmp
-      end
-      
-      s=tmp+ext+s
+           
+      base2 = sprintf("%07b", gsmchar.chr.bytes.first)
+      s = base2 + ext + s
 
     }
-
-    remainder=s.length%8
-    if remainder!=0
-      nfillbits=8-remainder
-      s="0"*nfillbits+s
-    end
-
-    #puts "S: #{s}"
     
-    i=s.length-8
-    hexstr=""
-    while i>=0
-      c=s[i,8]
-
-      tmp=c.to_i(2).to_s(16).upcase
-      if tmp.length==1
-        tmp="0"+tmp
-      end
-      #      puts tmp
-      hexstr+=tmp
-      i-=8
+    remainder = s.length % 8
+    if remainder != 0
+      nfillbits= 8 - remainder
+      s = "0" * nfillbits + s
+    end    
+    
+    hexstr = ""
+    
+    s.split('').each_slice(8) do |array_of_base2_digits|    
+      hexdigit = sprintf("%02x", array_of_base2_digits.join.to_i(2))     
+      hexstr = hexdigit.upcase + hexstr
     end
 
     return hexstr
