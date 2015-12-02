@@ -3,6 +3,8 @@
 require_relative '../../lib/ucp/base'
 require_relative '../../lib/ucp/util/base'
 require_relative '../../lib/ucp/util/ucp'
+require_relative '../../lib/ucp/util/packed_msg'
+require_relative '../../lib/ucp/util/gsm_packed_msg'
 
 module Ucp::Util
 
@@ -36,6 +38,19 @@ module Ucp::Util
      verify_value = "D7B41B1483C1609B32"     
      expect(UCP.pack7bits(msg)).to be_eql verify_value
    end
+   
+   it "coverts int to hex (wide 2 nibbles)" do
+     int = 60
+     expect(UCP.int2hex(int)).to be_eql int.to_s(16).upcase 
+   end
+   
+   it "converts ascii to ira" do
+     msg = "Olé 1€ sms"
+     #packed_msg = GsmPackedMsg.new("4F6C0520311B6520736D73", msg, 7, 7, false)
+     packed_msg = UCP.ascii2ira(msg)
+     expect(packed_msg.instance_variable_get("@encoded")).to be_eql "4F6C0520311B6520736D73"
+   end
+   
  end
  
 end

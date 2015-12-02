@@ -166,12 +166,13 @@ class Ucp::Util::UCP
   end
 
   # convert standard string to IRA encoded hexstring
-  def self.ascii2ira(str,max_bytes=nil)
+  # FIXME: max_bytes never used
+  def self.ascii2ira(str, max_bytes=nil)
 
-    tainted=false  # true if not able to convert a character
+    tainted = false  # true if not able to convert a character
     s=""
     idx=0
-    str.each_char  { |c|
+    str.each_char do |c|
       gsmchar=@gsmtable[c]
 
       ext=""
@@ -185,30 +186,28 @@ class Ucp::Util::UCP
         end
       end
 
-
-      tmp=int2hex(gsmchar)
-
+      tmp=int2hex(gsmchar.chr.bytes.first)
 
       if !max_bytes.nil?
         # if adding this character exceeds the max allowed nr of bytes, break
-        if ((tmp+ext+s).length*7.0/16).ceil>max_bytes
+        if ((tmp+ext+s).size*7.0/16).ceil>max_bytes
           break
         end
       end
 
       s+=ext+tmp
-      idx+=(ext+tmp).length/2
+      idx+=(ext+tmp).size/2
 
       # if reached the max allowed nr of bytes, break
       #    if (s.length*7.0/16).floor==max_bytes
       #      break
       #    end
 
-    }
+    end
 
-    required_septets=s.length/2
+    required_septets = s.size/2
     #puts "idx: #{idx}; req_sep: #{required_septets}"
-    return GsmPackedMsg.new(s,UCP.utf8_substr(str,0,idx-1),idx,required_septets,tainted)
+    return Ucp::Util::GsmPackedMsg.new(s, utf8_substr(str,0,idx-1),idx,required_septets,tainted)
   end
 
   # a dirty UTF-8 substring implementation
@@ -483,25 +482,12 @@ class Ucp::Util::UCP
     return unencoded
   end
 
-
-
-
   # convert an integer to an hex string, two (or given) nibbles wide
-  def self.int2hex(i,max_nibbles=2)
-    tmp=i.to_s(16).upcase
-    if tmp.length%2!=0
-      tmp="0"+tmp
-    end
-
-    remaining_nibbles=max_nibbles-tmp.length
-    if remaining_nibbles>0
-      tmp="0"*remaining_nibbles+tmp;
-    end
-
-    return tmp
+  # FIXME: the max_nibbles feature has never been used
+  def self.int2hex(i, max_nibbles=2)
+    value = sprintf("%0#{max_nibbles}x", i).upcase
+    return value
   end
-
-
 
   # given a UCP pdu string, return a UCP pdu object
   def self.parse_str(ustr)
