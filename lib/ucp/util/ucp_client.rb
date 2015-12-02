@@ -25,16 +25,18 @@ include Ucp::Util
 
 class Ucp::Util::UcpClient
 
-  @trn=0
-  @mr=0
+  #@trn=0
+  #@mr=0
 
-  def initialize(host,port, authcreds=nil)
-    @host=host
-    @port=port
-    @connected=false
-    @authcreds=authcreds
-    @trn=0
-    @mr=0
+  def initialize(host, port, authcreds=nil, source_host=nil, source_port=nil)
+    @host = host
+    @port = port
+    @connected = false
+    @authcreds = authcreds
+    @source_host = source_host
+    @source_post = source_port
+    @trn = 0
+    @mr = 0
     connect()
   end
 
@@ -42,12 +44,16 @@ class Ucp::Util::UcpClient
     #puts "connect()"
     
     begin
-        @socket = TCPSocket.new(@host, @port)
+        if @source_host
+          @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
+        else
+          @socket = TCPSocket.new(@host, @port)
+        end
         @connected=true
         @trn=0
     rescue
         @connected=false
-        return false
+        #return false
     end
 
 
