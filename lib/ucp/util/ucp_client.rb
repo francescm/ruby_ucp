@@ -34,27 +34,20 @@ class Ucp::Util::UcpClient
     @connected = false
     @authcreds = authcreds
     @source_host = source_host
-    @source_post = source_port
+    @source_port = source_port
     @trn = 0
     @mr = 0
-    connect()
   end
 
   def connect
-    #puts "connect()"
     
-    begin
-        if @source_host
-          @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
-        else
-          @socket = TCPSocket.new(@host, @port)
-        end
-        @connected=true
-        @trn=0
-    rescue
-        @connected=false
-        #return false
+     if @source_host
+      @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
+    else
+      @socket = TCPSocket.new(@host, @port)
     end
+    @connected=true
+    @trn=0
 
 
     if !@authcreds.nil?
@@ -69,7 +62,7 @@ class Ucp::Util::UcpClient
         return true
       else
         close()
-        return false
+        raise Exception, "authentication failed"        
       end
     end
 
