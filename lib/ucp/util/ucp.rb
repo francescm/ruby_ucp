@@ -22,6 +22,8 @@ include Ucp::Pdu
 class Ucp::Util::UCP
 
   @gsmtable={}
+  # asciitable: keys -> a integer base10
+  #             values -> ascii form
   @asciitable={}
   @extensiontable={}
   @extensiontable_rev={}
@@ -42,15 +44,15 @@ class Ucp::Util::UCP
   def self.initialize_ascii2ira
     
     ('A'..'Z').each { |c|
-      add_char(c.chr,c)
+      add_char(c.bytes.first,c)
     }
     ('a'..'z').each { |c|
       #@gsmtable[c]=c[0]
       #@asciitable[c[0]]=c
-      add_char(c.chr,c)
+      add_char(c.bytes.first,c)
     }
     ('0'..'9').each { |c|
-      add_char(c.chr,c)
+      add_char(c.bytes.first,c)
     }
 
 
@@ -458,28 +460,31 @@ class Ucp::Util::UCP
 
   # decode an IRA5 hexadecimal represented string to string
   def self.decode_ira(str)
-    unencoded=""
+    decoded=""
+    extended = false    
+    str.split('').each_slice(2) do |couple|
 
-    i=0
-    while i<str.length
-      hexv=str[i,2]
-      if "1B".eql?(hexv)
-        i+=2
-        hexv=str[i,2]
+      hexv = "#{couple.first}#{couple.last}"
+      intv = hexv.to_i(16)
 
-        value=@extensiontable_rev[hexv.to_i(16)]
-        value=" " if value.nil?
-        unencoded+=value
+      if extended
+        value = @extensiontable_rev[intv]
+        value = " " if value.nil?
+        decoded += value
+        extended = false
+      
+      elsif "1B".eql?(hexv)
+        extended = true
+        next                
       else
-        val=@asciitable[hexv.to_i(16)]
-        val=" " if val.nil?
-        unencoded+=val
+        val = @asciitable[intv]
+        val = " " if val.nil?
+        decoded += val
       end
-
-      i+=2
+      
     end
 
-    return unencoded
+    decoded
   end
 
   # convert an integer to an hex string, two (or given) nibbles wide

@@ -1,6 +1,7 @@
 #encoding: utf-8
 
 require_relative '../../lib/ucp/base'
+require_relative '../../lib/ucp/pdu/base'
 require_relative '../../lib/ucp/util/base'
 require_relative '../../lib/ucp/util/ucp'
 require_relative '../../lib/ucp/util/packed_msg'
@@ -19,9 +20,9 @@ module Ucp::Util
      UCP.initialize_ascii2ira
      table = UCP.instance_variable_get("@gsmtable")
      ext_table = UCP.instance_variable_get("@extensiontable")
-     expect(table['c']).to be_eql 'c'
-     expect(table['A']).to be_eql 'A'
-     expect(table['2']).to be_eql '2'
+     expect(table['c']).to be_eql 'c'.bytes.first
+     expect(table['A']).to be_eql 'A'.bytes.first
+     expect(table['2']).to be_eql '2'.bytes.first
      expect(ext_table['€']).to be_eql 0x65
    end
    
@@ -44,13 +45,20 @@ module Ucp::Util
      expect(UCP.int2hex(int)).to be_eql int.to_s(16).upcase 
    end
    
-   it "converts ascii to ira" do
+   it "converts a string to ira" do
      msg = "Olé 1€ sms"
-     #packed_msg = GsmPackedMsg.new("4F6C0520311B6520736D73", msg, 7, 7, false)
+     #packed_msg = GsmPackedMsg.new("", msg, 7, 7, false)
      packed_msg = UCP.ascii2ira(msg)
      expect(packed_msg.instance_variable_get("@encoded")).to be_eql "4F6C0520311B6520736D73"
    end
    
+   it "decodes ira back to string" do
+     #encoded = "6E6967657269616E207363616D"
+     #decoded = "nigerian scam"
+     encoded = "4F6C0520311B6520736D73"
+     decoded = "Olé 1€ sms"
+     expect(UCP.decode_ira(encoded)).to be_eql decoded
+   end
  end
  
 end

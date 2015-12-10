@@ -37,6 +37,7 @@ class Ucp::Util::UcpClient
     @source_port = source_port
     @trn = 0
     @mr = 0
+    connect
   end
 
   def connect
