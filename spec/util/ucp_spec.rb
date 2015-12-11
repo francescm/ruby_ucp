@@ -59,6 +59,13 @@ module Ucp::Util
      decoded = "Olé 1€ sms"
      expect(UCP.decode_ira(encoded)).to be_eql decoded
    end
+
+   it "packs OAdC" do
+     decoded = "ALPHA@NUM"
+     encoded_hex = [0x10, 0x41, 0x26, 0x14, 0x19, 0x04, 0x38, 0xAB, 0x4D]
+     encoded = encoded_hex.map{|hex| sprintf("%02X", hex)}.join
+     expect(UCP.packoadc(decoded)).to be_eql encoded
+   end
  end
  
 end

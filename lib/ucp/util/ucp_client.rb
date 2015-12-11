@@ -70,10 +70,7 @@ class Ucp::Util::UcpClient
   end
 
   def close
-    begin
-      @socket.close
-    rescue
-    end
+    @socket.close
     @connected=false
   end
 

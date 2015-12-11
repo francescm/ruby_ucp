@@ -358,7 +358,7 @@ class Ucp::Util::UCP
   # return an encoded originator alphanumeric address
   # to be used in the "oadc" field, if alphanumeric
   def self.packoadc(oa)
-    packedoa=UCP.pack7bits(oa)
+    packedoa = pack7bits(oa)
 
     # esta conta nao esta correcta... por causa das extensoes...
     #useful_nibbles=packedoa.length
