@@ -37,7 +37,7 @@ class Ucp::Util::UcpClient
     @source_port = source_port
     @trn = 0
     @mr = 0
-    connect
+    #connect
   end
 
   def connect
@@ -47,8 +47,8 @@ class Ucp::Util::UcpClient
     else
       @socket = TCPSocket.new(@host, @port)
     end
-    @connected=true
-    @trn=0
+    @connected = true
+    @trn = 0
 
 
     if !@authcreds.nil?
