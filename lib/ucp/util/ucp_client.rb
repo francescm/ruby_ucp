@@ -105,7 +105,7 @@ class Ucp::Util::UcpClient
         answer = @socket.gets(3.chr)
         #answer = @socket.gets("#")
         puts "Crecv: #{answer.to_s}\n" if $DEBUG
-    rescue Exception e
+    rescue Exception => e
         puts "socket is: #{@socket}" if $DEBUG
         puts "connect error: #{e.backtrace.join('\n')}" if $DEBUG
         @connected=false
