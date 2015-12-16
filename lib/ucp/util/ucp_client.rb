@@ -100,26 +100,13 @@ class Ucp::Util::UcpClient
   end
 
   def send_sync(ucp)
-    #puts "XXXX0"
 
-    if !connected?
-      connect()
-      # se nao foi possivel ligar, retornar imediatamente com erro
-      if !connected?
-        return nil
-      end
-    end
-
-    #puts "XXXX1"
-    
     answer=nil
-
 
     begin
         @socket.print ucp.to_s
         puts "Csent: #{ucp.to_s}\n" if $DEBUG
         answer = @socket.gets(3.chr)
-        #answer = @socket.gets("#")
         puts "Crecv: #{answer.to_s}\n" if $DEBUG
     rescue Exception => e
         puts "socket is: #{@socket}" if $DEBUG
