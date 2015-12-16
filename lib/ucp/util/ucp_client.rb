@@ -97,15 +97,19 @@ class Ucp::Util::UcpClient
     #puts "XXXX1"
     
     answer=nil
+
+
     begin
         @socket.print ucp.to_s
         puts "Csent: #{ucp.to_s}\n" if $DEBUG
         answer = @socket.gets(3.chr)
         #answer = @socket.gets("#")
         puts "Crecv: #{answer.to_s}\n" if $DEBUG
-    rescue
-        puts "error: #{$!}"
+    rescue Exception e
+        puts "socket is: #{@socket}" if $DEBUG
+        puts "connect error: #{e.backtrace.join('\n')}" if $DEBUG
         @connected=false
+        raise "Connect error: #{e.message}"
     end
 
     # verificar o trn da resposta face a submissao
@@ -113,8 +117,9 @@ class Ucp::Util::UcpClient
     return nil if replyucp.nil?
 
     if !ucp.trn.eql?(replyucp.trn)
-      puts "unexpected trn #{replyucp.trn}. should be #{ucp.trn}"
-      return nil
+      puts "stale trn #{replyucp.trn}. should be #{ucp.trn}. msg is: #{replyucp}"
+      #FIXME: get next mesg!
+      return replyucp
     else
       return replyucp
     end
