@@ -99,10 +99,10 @@ class Ucp::Util::UcpClient
     answer=nil
     begin
         @socket.print ucp.to_s
-        #puts "Csent: #{ucp.to_s}\n"
+        puts "Csent: #{ucp.to_s}\n" if $DEBUG
         answer = @socket.gets(3.chr)
         #answer = @socket.gets("#")
-        #puts "Crecv: #{answer.to_s}\n"
+        puts "Crecv: #{answer.to_s}\n" if $DEBUG
     rescue
         puts "error: #{$!}"
         @connected=false
