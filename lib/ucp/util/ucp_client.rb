@@ -37,13 +37,28 @@ class Ucp::Util::UcpClient
     @source_port = source_port
     @trn = 0
     @mr = 0
+    @local_port = nil
     #connect
   end
 
   def connect
-    
-     if @source_host
-      @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
+     if @source_host && @source_port
+       if @source_port.is_a? Range
+         @local_port = unless @local_port
+                         rand(@source_port)
+                       else
+                         if @source_port.cover?(@local_port + 1)
+                           @local_port + 1
+                         else
+                           @source_port.first
+                         end
+                       end
+         puts "local_port is #{@local_port}" if $DEBUG
+         @socket = TCPSocket.new(@host, @port, @source_host, @local_port)
+       else
+         @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
+       end
+
     else
       @socket = TCPSocket.new(@host, @port)
     end
