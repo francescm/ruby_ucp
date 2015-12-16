@@ -75,6 +75,7 @@ class Ucp::Util::UcpClient
   end
 
   def connected?
+    puts @socket if $DEBUG
     if !@socket.nil? && !@socket.closed? && @connected
       @connected=true
     else
@@ -108,8 +109,8 @@ class Ucp::Util::UcpClient
     rescue Exception => e
         puts "socket is: #{@socket}" if $DEBUG
         puts "connect error: #{e.backtrace.join('\n')}" if $DEBUG
-        @connected=false
-        raise "Connect error: #{e.message}"
+        connect
+        retry
     end
 
     # verificar o trn da resposta face a submissao
