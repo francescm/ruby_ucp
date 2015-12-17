@@ -42,23 +42,8 @@ class Ucp::Util::UcpClient
   end
 
   def connect
-     if @source_host && @source_port
-       if @source_port.is_a? Range
-         @local_port = unless @local_port
-                         rand(@source_port)
-                       else
-                         if @source_port.cover?(@local_port + 1)
-                           @local_port + 1
-                         else
-                           @source_port.first
-                         end
-                       end
-         puts "local_port is #{@local_port}" if $DEBUG
-         @socket = TCPSocket.new(@host, @port, @source_host, @local_port)
-       else
-         @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
-       end
-
+    if @source_host && @source_port
+      @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
     else
       @socket = TCPSocket.new(@host, @port)
     end
@@ -89,8 +74,11 @@ class Ucp::Util::UcpClient
     @connected=false
   end
 
+  #is it useless?
+  #I realize socket is closed only if I access it
+  # right now this function always returns true
   def connected?
-    puts @socket if $DEBUG
+    puts "socket is #{@socket}" if $DEBUG
     if !@socket.nil? && !@socket.closed? && @connected
       @connected=true
     else
