@@ -17,9 +17,8 @@ module Ucp::Util
     it "connects" do
       expect(TCPSocket).to receive(:new).with(@host, @port)
       client = UcpClient.new(@host, @port)
-      client.connect
     end
 
-    
+
   end
 end
