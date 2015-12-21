@@ -91,17 +91,7 @@ class Ucp::Util::UcpClient
 
     answer=nil
 
-    begin
-        @socket.print ucp.to_s
-        puts "Csent: #{ucp.to_s}\n" if $DEBUG
-        answer = @socket.gets(3.chr)
-        puts "Crecv: #{answer.to_s}\n" if $DEBUG
-    rescue Exception => e
-        puts "socket is: #{@socket}" if $DEBUG
-        puts "connect error: #{e.backtrace.join('\n')}" if $DEBUG
-        connect
-        retry
-    end
+    #handle reconnect elsewhere
 
     # verificar o trn da resposta face a submissao
     replyucp=UCP.parse_str(answer)
