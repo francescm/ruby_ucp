@@ -56,6 +56,14 @@ class Ucp::Pdu::Ucp31Result < Ucp::Pdu::UCP31
     @h[:sm]=sm
   end
 
+  def sm
+    @h[:sm]
+  end
+
+  def ec
+    @h[:ec]
+  end
+
 
 
 end

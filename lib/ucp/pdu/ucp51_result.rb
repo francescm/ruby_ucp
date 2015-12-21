@@ -58,7 +58,12 @@ class Ucp::Pdu::Ucp51Result < Ucp::Pdu::UCP5x
     @h[:sm]=sm
   end
 
+  def sm
+    @h[:sm]
+  end
 
-
+  def ec
+    @h[:ec]
+  end
 end
 
