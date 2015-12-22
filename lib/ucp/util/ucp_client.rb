@@ -70,7 +70,7 @@ class Ucp::Util::UcpClient
   end
 
   def close
-    @socket.close
+    @socket.close if @socket
     @connected=false
   end
 
