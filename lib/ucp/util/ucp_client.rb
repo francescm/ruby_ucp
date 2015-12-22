@@ -107,27 +107,8 @@ class Ucp::Util::UcpClient
     end
   end
 
-  def send(ucp)
-    if !connected?
-      connect()
-      # se nao foi possivel ligar, retornar imediatamente com erro
-      if !connected?
-        return false
-      end
-    end
-
-    begin
-        @socket.print ucp.to_s
-    rescue
-        puts "error: #{$!}"
-        # deu erro, vamos fechar o socket
-        close()
-        # error
-        return false
-    end
-
-    # OK
-    return true
+  def send_frame(ucp)
+    @socket.print ucp.to_s
   end
 
   def read
