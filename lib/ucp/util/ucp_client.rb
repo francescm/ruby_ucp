@@ -56,14 +56,14 @@ class Ucp::Util::UcpClient
       auth_ucp.basic_auth(@authcreds[:login],@authcreds[:password])
       auth_ucp.trn="00"
       answer=send_sync(auth_ucp)
-      #puts "Crecv: #{answer.to_s}\n"
+      puts "Crecv: #{answer.to_s}\n" if $DEBUG
       
       if !answer.nil? && answer.is_ack?
         inc_trn()
         return true
       else
         close()
-        raise Exception, "authentication failed"        
+        raise Exception, "authentication failed; username: #{@authcreds[:login]}"
       end
     end
 
