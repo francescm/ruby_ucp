@@ -37,7 +37,6 @@ class Ucp::Util::UcpClient
     @source_port = source_port
     @trn = 0
     @mr = 0
-    @local_port = nil
     connect
   end
 
@@ -78,7 +77,6 @@ class Ucp::Util::UcpClient
   #I realize socket is closed only if I access it
   # right now this function always returns true
   def connected?
-    puts "socket is #{@socket}" if $DEBUG
     if !@socket.nil? && !@socket.closed? && @connected
       @connected=true
     else
@@ -89,9 +87,12 @@ class Ucp::Util::UcpClient
 
   def send_sync(ucp)
 
-    answer=nil
+    #handle reconnection elsewhere
+    @socket.print ucp.to_s
+    puts "Csent: #{ucp.to_s}\n" if $DEBUG
+    answer = @socket.gets(3.chr)
+    puts "Crecv: #{answer.to_s}\n" if $DEBUG
 
-    #handle reconnect elsewhere
 
     # verificar o trn da resposta face a submissao
     replyucp=UCP.parse_str(answer)
