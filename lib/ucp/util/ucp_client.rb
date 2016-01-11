@@ -25,29 +25,30 @@ include Ucp::Util
 
 class Ucp::Util::UcpClient
 
-  #@trn=0
-  #@mr=0
+  @trn=0
+  @mr=0
 
-  def initialize(host, port, authcreds=nil, source_host=nil, source_port=nil)
-    @host = host
-    @port = port
-    @connected = false
-    @authcreds = authcreds
-    @source_host = source_host
-    @source_port = source_port
-    @trn = 0
-    @mr = 0
-    connect
+  def initialize(host,port, authcreds=nil)
+    @host=host
+    @port=port
+    @connected=false
+    @authcreds=authcreds
+    @trn=0
+    @mr=0
+    connect()
   end
 
   def connect
-    if @source_host && @source_port
-      @socket = TCPSocket.new(@host, @port, @source_host, @source_port)
-    else
-      @socket = TCPSocket.new(@host, @port)
+    #puts "connect()"
+    
+    begin
+        @socket = TCPSocket.new(@host, @port)
+        @connected=true
+        @trn=0
+    rescue
+        @connected=false
+        return false
     end
-    @connected = true
-    @trn = 0
 
 
     if !@authcreds.nil?
@@ -55,27 +56,27 @@ class Ucp::Util::UcpClient
       auth_ucp.basic_auth(@authcreds[:login],@authcreds[:password])
       auth_ucp.trn="00"
       answer=send_sync(auth_ucp)
-      puts "Crecv: #{answer.to_s}\n" if $DEBUG
+      #puts "Crecv: #{answer.to_s}\n"
       
       if !answer.nil? && answer.is_ack?
         inc_trn()
         return true
       else
         close()
-        raise Exception, "authentication failed; username: #{@authcreds[:login]}"
+        return false
       end
     end
 
   end
 
   def close
-    @socket.close if @socket
+    begin
+      @socket.close
+    rescue
+    end
     @connected=false
   end
 
-  #is it useless?
-  #I realize socket is closed only if I access it
-  # right now this function always returns true
   def connected?
     if !@socket.nil? && !@socket.closed? && @connected
       @connected=true
@@ -86,29 +87,63 @@ class Ucp::Util::UcpClient
   end
 
   def send_sync(ucp)
+    #puts "XXXX0"
 
-    #handle reconnection elsewhere
-    @socket.print ucp.to_s
-    puts "Csent: #{ucp.to_s}\n" if $DEBUG
-    answer = @socket.gets(3.chr)
-    puts "Crecv: #{answer.to_s}\n" if $DEBUG
+    if !connected?
+      connect()
+      # se nao foi possivel ligar, retornar imediatamente com erro
+      if !connected?
+        return nil
+      end
+    end
 
+    #puts "XXXX1"
+    
+    answer=nil
+    begin
+        @socket.print ucp.to_s
+        puts "Csent: #{ucp.to_s}\n"
+        answer = @socket.gets(3.chr)
+        #answer = @socket.gets("#")
+        puts "Crecv: #{answer.to_s}\n"
+    rescue
+        puts "error: #{$!}"
+        @connected=false
+    end
 
     # verificar o trn da resposta face a submissao
     replyucp=UCP.parse_str(answer)
     return nil if replyucp.nil?
 
     if !ucp.trn.eql?(replyucp.trn)
-      puts "stale trn #{replyucp.trn}. should be #{ucp.trn}. msg is: #{replyucp}"
-      #FIXME: get next mesg!
-      return replyucp
+      puts "unexpected trn #{replyucp.trn}. should be #{ucp.trn}"
+      return nil
     else
       return replyucp
     end
   end
 
-  def send_frame(ucp)
-    @socket.print ucp.to_s
+  def send(ucp)
+    if !connected?
+      connect()
+      # se nao foi possivel ligar, retornar imediatamente com erro
+      if !connected?
+        return false
+      end
+    end
+
+    begin
+        @socket.print ucp.to_s
+    rescue
+        puts "error: #{$!}"
+        # deu erro, vamos fechar o socket
+        close()
+        # error
+        return false
+    end
+
+    # OK
+    return true
   end
 
   def read
